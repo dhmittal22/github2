@@ -1,0 +1,28 @@
+name: CI on Self-hosted Runner
+
+on:
+  push:
+    branches:
+      - main  # Trigger automatically only for dev
+  workflow_dispatch:  # Allow manual trigger
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: false
+        default: 'production'
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run build
+        run: echo "Running on self-hosted runner"
+      - name: Pull latest code
+        run: |
+          TEMP_DIR=$(pwd)
+          DEST_DIR=/home/weexcel/github-runner
+          echo "Copying new files from $TEMP_DIR to $DEST_DIR..."
+          sudo cp -r $TEMP_DIR/* $DEST_DIR/ 
+          
